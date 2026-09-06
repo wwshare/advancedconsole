@@ -1,0 +1,11 @@
+{
+  "namespace": "wwshare",
+  "name": "AdvancedConsole",
+  "description": "Advanced console mod for PEAK with a modern UI and RPC-synced commands: teleportation, fun commands, item spawning, and etc. Press F1 and open Advanced Console tab.",
+  "version_number": "1.1.9",
+  "dependencies": [
+    "BepInEx-BepInExPack_PEAK-5.4.2403"
+  ],
+  "website_url": "https://github.com/wwshare",
+  "FullName": "wwshare-AdvancedConsole"
+}
