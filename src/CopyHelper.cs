@@ -13,8 +13,12 @@ public static class CopyHelper
 	{
 		try
 		{
-			root.RegisterCallback<ContextClickEvent>(delegate(ContextClickEvent evt)
+			root.RegisterCallback<PointerDownEvent>(delegate(PointerDownEvent evt)
 			{
+				if (evt.button != 1)
+				{
+					return;
+				}
 				try
 				{
 					string text = FindText(evt.target as VisualElement);

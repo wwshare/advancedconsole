@@ -86,7 +86,9 @@ public static class ConsoleCommandPatches
 				}
 				else if (list3.Count > 1)
 				{
-					Plugin.Log.LogWarning((object)$"命令 '{firstToken}' 存在多个匹配, 请使用完整域名 (如 {list3[0].DomainName}.{list3[0].Command})");
+					ConsoleCommand preferred = PickPreferredCommand(list3);
+					rewritten = preferred.DomainName + "." + preferred.Command;
+					Plugin.Log.LogDebug((object)$"命令 '{firstToken}' 存在 {list3.Count} 个匹配, 优先执行 {rewritten}");
 				}
 			}
 			if (rewritten != null)
@@ -102,5 +104,18 @@ public static class ConsoleCommandPatches
 			Plugin.Log.LogDebug((object)("ProcessCommandPrefix 错误: " + ex.Message));
 			return true;
 		}
+	}
+
+	private static ConsoleCommand PickPreferredCommand(List<ConsoleCommand> matches)
+	{
+		string modAssemblyName = typeof(Plugin).Assembly.GetName().Name;
+		foreach (ConsoleCommand c in matches)
+		{
+			if (c.MethodInfo != null && c.MethodInfo.DeclaringType != null && c.MethodInfo.DeclaringType.Assembly.GetName().Name == modAssemblyName)
+			{
+				return c;
+			}
+		}
+		return matches[0];
 	}
 }

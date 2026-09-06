@@ -51,8 +51,12 @@ public static class ConsoleEnhancements
 				return;
 			}
 			_patchedLogElements.Add(__instance);
-			__instance.RegisterCallback<ContextClickEvent>(delegate(ContextClickEvent evt)
+			__instance.RegisterCallback<PointerDownEvent>(delegate(PointerDownEvent evt)
 			{
+				if (evt.button != 1)
+				{
+					return;
+				}
 				ConsoleLogEntry currentEntry = GetCurrentEntry(__instance);
 				CopyToClipboard(currentEntry.Log);
 			});
