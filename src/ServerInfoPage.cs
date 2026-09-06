@@ -72,6 +72,7 @@ public class ServerInfoPage : DebugPage
 	{
 		((VisualElement)this).name = "ServerInfo";
 		SetupPage();
+		CopyHelper.AttachCopyOnRightClick((VisualElement)(object)this);
 		RefreshInfo();
 		_lastUpdateTime = Time.time;
 		((VisualElement)this).schedule.Execute((Action)AutoRefresh).Every(1000L);

@@ -51,22 +51,11 @@ public static class ConsoleEnhancements
 				return;
 			}
 			_patchedLogElements.Add(__instance);
-			__instance.AddManipulator(new ContextualMenuManipulator(delegate(ContextualMenuPopulateEvent evt)
+			__instance.RegisterCallback<ContextClickEvent>(delegate(ContextClickEvent evt)
 			{
-				evt.menu.AppendAction("复制日志", delegate
-				{
-					ConsoleLogEntry currentEntry = GetCurrentEntry(__instance);
-					CopyToClipboard(currentEntry.Log);
-				});
-				evt.menu.AppendAction("复制堆栈", delegate
-				{
-					ConsoleLogEntry currentEntry = GetCurrentEntry(__instance);
-					if (!string.IsNullOrEmpty(currentEntry.Stacktrace))
-					{
-						CopyToClipboard(currentEntry.Stacktrace);
-					}
-				});
-			}));
+				ConsoleLogEntry currentEntry = GetCurrentEntry(__instance);
+				CopyToClipboard(currentEntry.Log);
+			});
 		}
 		catch (Exception ex)
 		{

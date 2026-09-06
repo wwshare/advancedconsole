@@ -55,6 +55,7 @@ public class Plugin : BaseUnityPlugin
 		{
 			Harmony consoleUIHarmony = new Harmony("com.github.wwshare.advancedconsole.consoleui");
 			ConsoleEnhancements.Initialize(consoleUIHarmony);
+			ConsoleCommandPatches.Initialize(consoleUIHarmony);
 		}
 		catch (Exception ex)
 		{
