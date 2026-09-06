@@ -25,9 +25,17 @@ The mod adds several new tabs to the in-game console:
 2. Use the visual interface to execute commands:
    - **Search**: Type to filter commands by name or description
    - **Group Filter**: Select a specific command category (Player Effects, Spawn Commands, etc.)
+   - **Favorites**: Click ★ to favorite a command, then use the "★ 收藏" filter to show only favorites
+   - **Copy Button**: One-click "复制" button on each command copies the command name to clipboard
+   - **Right-click Copy**: Right-click any command row to copy the command or a ready-to-execute line
    - **Command Interface**: Each command has input fields for parameters and an Execute button
    - **Player Dropdowns**: Automatically updated with current connected players
    - **Visual Indicators**: and 🔒MC badges show command types
+
+#### Console UI Enhancements
+- **Tab Autocomplete**: Type part of a command in the console input and press `Tab` to cycle through suggestions (built into the game console)
+- **Right-click Copy Log**: Right-click any log line in the console to copy the message or stack trace
+- **Brighter Cursor**: Console input field uses a brighter, higher-contrast cursor for readability
 
 #### Server Info Tab
 1. Click the **"Server Info"** tab to view comprehensive server and player information:
@@ -520,7 +528,7 @@ Hosts can change maps instantly without leaving the lobby:
 
 - **Live Map Switching**: Change maps while players are connected
 - **Seamless Transitions**: All players automatically follow to the new map
-- **Visual Map Selector**: Easy-to-use dropdown with all available maps
+- **Map Commands**: Use `LobbyCommands.SetMap`, `LobbyCommands.ListMaps`, etc.
 - **No Lobby Restart**: Keep the same lobby settings and players
 - **Instant Effect**: Map changes happen immediately with full synchronization
 

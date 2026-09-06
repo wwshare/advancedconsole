@@ -51,6 +51,15 @@ public class Plugin : BaseUnityPlugin
 		// MasterClientCommandInterceptor.Initialize();
 		// ConsoleLogPatch.Initialize();
 		Log.LogInfo((object)"Harmony patches skipped (diagnostic mode)!");
+		try
+		{
+			Harmony consoleUIHarmony = new Harmony("com.github.wwshare.advancedconsole.consoleui");
+			ConsoleEnhancements.Initialize(consoleUIHarmony);
+		}
+		catch (Exception ex)
+		{
+			Log.LogWarning((object)$"ConsoleEnhancements 初始化失败: {ex}");
+		}
 		((MonoBehaviour)this).StartCoroutine(DoInject());
 		// 诊断: 疑似在角色出生时原生崩溃, 暂时禁用
 		// ((MonoBehaviour)this).StartCoroutine(InitializeAfflictionsRPC());

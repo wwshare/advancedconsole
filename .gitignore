@@ -1,20 +1,11 @@
 # Build outputs
-mod/bin/
-mod/obj/
-decompiled/
 **/bin/
 **/obj/
+*.dll
+*.zip
 
 # Publicized game assemblies (regenerate with tools/publicize)
 refs/
-*.dll
-
-# Scratch / debug files
-build_full.txt
-build_verbose.txt
-errors*.txt
-diff/
-_test/
 
 # IDE
 .vs/

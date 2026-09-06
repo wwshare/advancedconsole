@@ -842,6 +842,19 @@ public class AdvancedConsolePage : DebugPage
 		((VisualElement)favButton).style.marginRight = new StyleLength(4f);
 		favButton.tooltip = "点击收藏/取消收藏该命令";
 		val4.Add(favButton);
+		Button copyButton = new Button((Action)delegate
+		{
+			CopyToClipboard(command.FullName);
+		});
+		copyButton.text = "复制";
+		((VisualElement)copyButton).style.width = new StyleLength(34f);
+		((VisualElement)copyButton).style.height = new StyleLength(20f);
+		((VisualElement)copyButton).style.fontSize = new StyleLength(9f);
+		((VisualElement)copyButton).style.backgroundColor = new StyleColor(new Color(0.16f, 0.16f, 0.22f));
+		((VisualElement)copyButton).style.color = new StyleColor(new Color(0.85f, 0.85f, 0.95f));
+		((VisualElement)copyButton).style.marginRight = new StyleLength(4f);
+		copyButton.tooltip = "复制命令到剪贴板";
+		val4.Add(copyButton);
 		VisualElement val15 = new VisualElement();
 		val15.style.flexDirection = new StyleEnum<FlexDirection>((FlexDirection)2);
 		val15.style.alignItems = new StyleEnum<Align>((Align)2);
@@ -914,7 +927,31 @@ public class AdvancedConsolePage : DebugPage
 		val16.Add((VisualElement)(object)val25);
 		val4.Add(val16);
 		val2.Add(val4);
+		val2.AddManipulator(new ContextualMenuManipulator(delegate(ContextualMenuPopulateEvent evt)
+		{
+			evt.menu.AppendAction("复制命令", delegate
+			{
+				CopyToClipboard(command.FullName);
+			});
+			evt.menu.AppendAction("复制为执行命令", delegate
+			{
+				CopyToClipboard(command.FullName + " ");
+			});
+		}));
 		_commandsContainer.Add(val2);
+	}
+
+	private static void CopyToClipboard(string text)
+	{
+		try
+		{
+			GUIUtility.systemCopyBuffer = text;
+			Debug.Log((object)("已复制到剪贴板: " + text));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogWarning((object)("复制到剪贴板失败: " + ex.Message));
+		}
 	}
 
 	private DropdownField CreatePlayerDropdown()
