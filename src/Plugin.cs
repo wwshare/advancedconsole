@@ -62,8 +62,59 @@ public class Plugin : BaseUnityPlugin
 			Log.LogWarning((object)$"ConsoleEnhancements 初始化失败: {ex}");
 		}
 		((MonoBehaviour)this).StartCoroutine(DoInject());
+		((MonoBehaviour)this).StartCoroutine(ReRegisterConsoleCommands());
 		// 诊断: 疑似在角色出生时原生崩溃, 暂时禁用
 		// ((MonoBehaviour)this).StartCoroutine(InitializeAfflictionsRPC());
+	}
+
+	private IEnumerator ReRegisterConsoleCommands()
+	{
+		// 等待游戏启动完毕 + 其他 mod 加载完成, 再重新扫描并强制更新命令表
+		yield return (object)new WaitForSeconds(3f);
+		yield return (object)new WaitForSeconds(1f);
+		try
+		{
+			Type consoleHandlerType = AppDomain.CurrentDomain.GetAssemblies().SelectMany((Assembly a) => SafeGetTypes(a)).FirstOrDefault((Type t) => t.FullName == "Zorro.Core.CLI.ConsoleHandler");
+			if (consoleHandlerType == null)
+			{
+				yield break;
+			}
+			MethodInfo scanCommands = consoleHandlerType.GetMethod("ScanForConsoleCommands", BindingFlags.Static | BindingFlags.Public);
+			MethodInfo scanParsers = consoleHandlerType.GetMethod("ScanForTypeParsers", BindingFlags.Static | BindingFlags.Public);
+			object commands = scanCommands?.Invoke(null, null);
+			object parsers = scanParsers?.Invoke(null, null);
+			if (commands == null)
+			{
+				yield break;
+			}
+			if (parsers != null)
+			{
+				Type dictType = parsers.GetType();
+				MethodInfo setItem = dictType.GetMethod("set_Item", new Type[2]
+				{
+					typeof(Type),
+					dictType.GetGenericArguments()[1]
+				});
+				setItem?.Invoke(parsers, new object[2] { typeof(PhotonPlayer), new PlayerCLIParser() });
+				setItem?.Invoke(parsers, new object[2] { typeof(ACHIEVEMENTTYPE), new AchievementTypeCLIParser() });
+			}
+			FieldInfo commandsField = consoleHandlerType.GetField("m_consoleCommands", BindingFlags.Static | BindingFlags.NonPublic);
+			if (commandsField != null)
+			{
+				commandsField.SetValue(null, commands);
+			}
+			if (parsers != null)
+			{
+				FieldInfo parsersField = consoleHandlerType.GetField("m_typeParsers", BindingFlags.Static | BindingFlags.NonPublic);
+				parsersField?.SetValue(null, parsers);
+			}
+			int count = (commands as System.Collections.ICollection)?.Count ?? -1;
+			Log.LogInfo((object)$"Console commands re-registered: {count} commands available.");
+		}
+		catch (Exception ex)
+		{
+			Log.LogWarning((object)$"Failed to re-register console commands: {ex}");
+		}
 	}
 
 	private IEnumerator DoInject()
