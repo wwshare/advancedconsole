@@ -25,10 +25,19 @@ public static class PrefabSpawnCommands
 			List<string> list = GetAllPrefabNames();
 			foreach (string item in list)
 			{
-				Debug.Log((object)$"  {item}");
+				string normalized = NormalizeName(item);
+				if (normalized != item.ToLowerInvariant())
+				{
+					Debug.Log((object)$"  {item}  (输入: {normalized})");
+				}
+				else
+				{
+					Debug.Log((object)$"  {item}");
+				}
 			}
 			Debug.Log((object)$"共 {list.Count} 个可用预制件");
 			Debug.Log((object)"使用 PrefabSpawnCommands.SpawnPrefab <名称> [数量] 生成");
+			Debug.Log((object)"带空格的名称可用别名(去掉空格/符号)输入, 如 anti-ropespool");
 			Debug.Log((object)"=========================");
 		}
 		catch (Exception ex)
@@ -55,19 +64,24 @@ public static class PrefabSpawnCommands
 				Debug.LogWarning((object)"spawnprefab: 未找到本地角色!");
 				return;
 			}
+			string resolvedName = ResolvePrefabName(prefabName);
+			if (!string.Equals(resolvedName, prefabName, StringComparison.OrdinalIgnoreCase))
+			{
+				Debug.Log((object)$"spawnprefab: '{prefabName}' 解析为 '{resolvedName}'");
+			}
 			count = Mathf.Clamp(count, 1, 30);
 			Vector3 val = GetCrosshairPosition();
 			int num = 0;
 			for (int i = 0; i < count; i++)
 			{
 				Vector3 val2 = val + new Vector3(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(-1f, 1f));
-				if (TrySpawnPrefab(prefabName, val2))
+				if (TrySpawnPrefab(resolvedName, val2))
 				{
 					num++;
 				}
 			}
-			Debug.Log((object)$"spawnprefab: 已生成 {num}/{count} 个 '{prefabName}'");
-			Plugin.Log.LogInfo((object)$"已生成预制件 {prefabName} x{num}");
+			Debug.Log((object)$"spawnprefab: 已生成 {num}/{count} 个 '{resolvedName}'");
+			Plugin.Log.LogInfo((object)$"已生成预制件 {resolvedName} x{num}");
 		}
 		catch (Exception ex)
 		{
@@ -115,6 +129,59 @@ public static class PrefabSpawnCommands
 			hashSet.Add(text);
 		}
 		return hashSet.OrderBy((string x) => x).ToList();
+	}
+
+	private static string NormalizeName(string name)
+	{
+		if (string.IsNullOrEmpty(name))
+		{
+			return "";
+		}
+		return new string((from c in name
+			where char.IsLetterOrDigit(c)
+			select char.ToLowerInvariant(c)).ToArray());
+	}
+
+	private static string ResolvePrefabName(string input)
+	{
+		if (string.IsNullOrEmpty(input))
+		{
+			return input;
+		}
+		List<string> all = GetAllPrefabNames();
+		foreach (string name in all)
+		{
+			if (string.Equals(name, input, StringComparison.OrdinalIgnoreCase))
+			{
+				return name;
+			}
+		}
+		string normalizedInput = NormalizeName(input);
+		if (!string.IsNullOrEmpty(normalizedInput))
+		{
+			foreach (string name2 in all)
+			{
+				if (NormalizeName(name2) == normalizedInput)
+				{
+					return name2;
+				}
+			}
+			foreach (string name3 in all)
+			{
+				if (NormalizeName(name3).Contains(normalizedInput))
+				{
+					return name3;
+				}
+			}
+		}
+		foreach (string name4 in all)
+		{
+			if (name4.Contains(input, StringComparison.OrdinalIgnoreCase))
+			{
+				return name4;
+			}
+		}
+		return input;
 	}
 
 	private static bool TrySpawnPrefab(string prefabName, Vector3 position)
